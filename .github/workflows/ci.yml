@@ -1,0 +1,46 @@
+name: CI/CD for MyProject
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1) Получаем код из репозитория
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      # 2) Ставим Python (если у вас Python-проект)
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      # 3) Устанавливаем зависимости (если они есть)
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 4) Запускаем тесты (unittest, pytest, или ваш скрипт)
+      - name: Run tests
+        run: |
+          python -m unittest discover -s test
+
+  # Пример отдельной Job для "развёртывания" (если надо)
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      # Здесь опциональный шаг: копировать артефакты сборки, деплой на сервер и т.п.
+      - name: Deploy (example)
+        run: echo "Deploy step goes here (SSH, FTP, Docker, etc.)"
